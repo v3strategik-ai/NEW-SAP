@@ -622,6 +622,195 @@ async def get_ai_insights(current_user: User = Depends(get_current_user)):
         logging.error(f"AI insights error: {str(e)}")
         return {"insights": [], "key_metrics": {}}
 
+# ============ WORKFLOW AUTOMATION ROUTES ============
+
+@api_router.get("/workflows", response_model=List[Workflow])
+async def get_workflows(current_user: User = Depends(get_current_user)):
+    workflows = await db.workflows.find({}, {"_id": 0}).to_list(1000)
+    return workflows
+
+@api_router.post("/workflows", response_model=Workflow)
+async def create_workflow(workflow: Workflow, current_user: User = Depends(get_current_user)):
+    workflow.created_by = current_user.id
+    doc = workflow.model_dump()
+    await db.workflows.insert_one(doc)
+    return workflow
+
+@api_router.put("/workflows/{workflow_id}", response_model=Workflow)
+async def update_workflow(workflow_id: str, workflow: Workflow, current_user: User = Depends(get_current_user)):
+    await db.workflows.update_one({"id": workflow_id}, {"$set": workflow.model_dump()})
+    return workflow
+
+@api_router.delete("/workflows/{workflow_id}")
+async def delete_workflow(workflow_id: str, current_user: User = Depends(get_current_user)):
+    await db.workflows.delete_one({"id": workflow_id})
+    return {"message": "Workflow deleted"}
+
+@api_router.post("/workflows/{workflow_id}/execute")
+async def execute_workflow(workflow_id: str, data: Dict[str, Any], current_user: User = Depends(get_current_user)):
+    workflow = await db.workflows.find_one({"id": workflow_id}, {"_id": 0})
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    
+    # Simulate workflow execution
+    return {"status": "executed", "workflow_id": workflow_id, "result": data}
+
+# ============ EMAIL ASSISTANT ROUTES ============
+
+@api_router.post("/email/draft", response_model=EmailResponse)
+async def draft_email(email_data: EmailDraft, current_user: User = Depends(get_current_user)):
+    try:
+        chat = await get_ai_chat()
+        prompt = f"""Draft a {email_data.tone} email with the following details:
+        To: {email_data.to}
+        Subject: {email_data.subject}
+        Context: {email_data.context}
+        
+        Provide JSON with:
+        {{
+            "subject": "refined subject line",
+            "body": "complete email body with greeting and signature",
+            "suggestions": ["suggestion1", "suggestion2", "suggestion3"]
+        }}"""
+        
+        message = UserMessage(text=prompt)
+        response = await chat.send_message(message)
+        result = json.loads(response)
+        
+        return EmailResponse(**result)
+    except Exception as e:
+        logging.error(f"Email draft error: {str(e)}")
+        return EmailResponse(
+            subject=email_data.subject,
+            body="Unable to generate email draft. Please try again.",
+            suggestions=[]
+        )
+
+@api_router.post("/email/summarize-meeting")
+async def summarize_meeting(data: Dict[str, Any], current_user: User = Depends(get_current_user)):
+    transcript = data.get('transcript', '')
+    
+    try:
+        chat = await get_ai_chat()
+        prompt = f"""Summarize this meeting transcript:
+        {transcript}
+        
+        Provide JSON with:
+        {{
+            "summary": "brief summary",
+            "key_points": ["point1", "point2"],
+            "action_items": ["action1", "action2"],
+            "next_steps": ["step1", "step2"]
+        }}"""
+        
+        message = UserMessage(text=prompt)
+        response = await chat.send_message(message)
+        result = json.loads(response)
+        
+        return result
+    except Exception as e:
+        logging.error(f"Meeting summary error: {str(e)}")
+        return {
+            "summary": "Unable to generate summary",
+            "key_points": [],
+            "action_items": [],
+            "next_steps": []
+        }
+
+# ============ DOCUMENT INTELLIGENCE ROUTES ============
+
+@api_router.post("/documents/extract")
+async def extract_document_data(doc: Dict[str, Any], current_user: User = Depends(get_current_user)):
+    file_name = doc.get('file_name', '')
+    file_type = doc.get('file_type', '')
+    content = doc.get('content', '')
+    
+    try:
+        chat = await get_ai_chat()
+        prompt = f"""Extract structured data from this {file_type} document:
+        File: {file_name}
+        Content: {content}
+        
+        Identify if this is an invoice, contract, receipt, or other document type.
+        Extract all relevant fields like:
+        - Invoice: invoice_number, date, vendor, amount, line_items
+        - Contract: parties, start_date, end_date, terms, value
+        - Receipt: merchant, date, items, total
+        
+        Provide JSON with:
+        {{
+            "document_type": "invoice|contract|receipt|other",
+            "fields": {{extracted fields}},
+            "confidence": <0-1>
+        }}"""
+        
+        message = UserMessage(text=prompt)
+        response = await chat.send_message(message)
+        result = json.loads(response)
+        
+        # Store extracted data
+        doc_record = {
+            "id": str(uuid.uuid4()),
+            "file_name": file_name,
+            "file_type": file_type,
+            "extracted_data": result,
+            "uploaded_by": current_user.id,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.documents.insert_one(doc_record)
+        
+        return result
+    except Exception as e:
+        logging.error(f"Document extraction error: {str(e)}")
+        return {
+            "document_type": "unknown",
+            "fields": {},
+            "confidence": 0.0
+        }
+
+@api_router.get("/documents")
+async def get_documents(current_user: User = Depends(get_current_user)):
+    documents = await db.documents.find({}, {"_id": 0}).to_list(1000)
+    return documents
+
+# ============ VOICE COMMANDS ROUTE ============
+
+@api_router.post("/voice/command")
+async def process_voice_command(data: Dict[str, Any], current_user: User = Depends(get_current_user)):
+    command = data.get('command', '')
+    
+    try:
+        chat = await get_ai_chat()
+        prompt = f"""Process this voice command for an ERP system:
+        Command: "{command}"
+        
+        Determine the intent and extract parameters. Possible actions:
+        - show_dashboard, show_customers, show_leads, show_inventory, show_financial
+        - create_customer, create_lead, create_quote
+        - search_data, filter_data, export_data
+        
+        Provide JSON with:
+        {{
+            "intent": "action_name",
+            "parameters": {{extracted params}},
+            "response": "natural language response to user",
+            "confidence": <0-1>
+        }}"""
+        
+        message = UserMessage(text=prompt)
+        response = await chat.send_message(message)
+        result = json.loads(response)
+        
+        return result
+    except Exception as e:
+        logging.error(f"Voice command error: {str(e)}")
+        return {
+            "intent": "unknown",
+            "parameters": {},
+            "response": "I didn't understand that command. Please try again.",
+            "confidence": 0.0
+        }
+
 # ============ MAIN APP ============
 
 app.include_router(api_router)
