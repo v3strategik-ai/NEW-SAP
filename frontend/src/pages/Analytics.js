@@ -45,8 +45,8 @@ const Analytics = ({ user, onLogout }) => {
   if (loading) {
     return (
       <Layout user={user} onLogout={onLogout}>
-        <div className=\"flex items-center justify-center h-96\">
-          <div className=\"spinner\"></div>
+        <div className="flex items-center justify-center h-96">
+          <div className="spinner"></div>
         </div>
       </Layout>
     );
