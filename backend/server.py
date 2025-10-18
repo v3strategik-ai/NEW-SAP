@@ -218,8 +218,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 async def get_ai_chat():
     return LlmChat(
         api_key=EMERGENT_LLM_KEY,
-        session_id="erp-assistant",
-        system_message="You are an advanced ERP assistant specialized in CRM, CPQ, inventory management, and financial analysis. Provide insights, recommendations, and data analysis to help users make better business decisions."
+        session_id="agentix-ai-assistant",
+        system_message="You are Agentix AI, an advanced intelligent assistant specialized in CRM, CPQ, inventory management, and financial analysis. Provide insights, recommendations, and data analysis to help users make better business decisions."
     ).with_model("openai", "gpt-4o")
 
 # ============ AUTH ROUTES ============
