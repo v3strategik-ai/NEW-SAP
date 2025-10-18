@@ -13,7 +13,10 @@ import {
   Menu,
   X,
   Sun,
-  Moon
+  Moon,
+  GitBranch,
+  Mail,
+  FileSearch
 } from 'lucide-react';
 
 const Layout = ({ user, onLogout, children }) => {
