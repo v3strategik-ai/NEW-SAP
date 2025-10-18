@@ -19,6 +19,7 @@ import {
 const Layout = ({ user, onLogout, children }) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const navigation = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
