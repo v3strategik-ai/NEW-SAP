@@ -94,15 +94,24 @@ const Layout = ({ user, onLogout, children }) => {
           </nav>
 
           {/* User section */}
-          <div className="p-4 border-t">
-            <div className="p-3 bg-gradient-to-br from-gray-50 to-indigo-50 rounded-xl mb-3">
-              <p className="text-sm font-semibold text-gray-800">{user?.name}</p>
-              <p className="text-xs text-gray-600">{user?.email}</p>
+          <div className="p-4 border-t dark:border-gray-700">
+            <div className="p-3 bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl mb-3">
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{user?.name}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-300">{user?.email}</p>
             </div>
+            <Button
+              onClick={toggleTheme}
+              variant="outline"
+              className="w-full justify-start gap-2 mb-2 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+              data-testid="theme-toggle"
+            >
+              {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+            </Button>
             <Button
               onClick={onLogout}
               variant="outline"
-              className="w-full justify-start gap-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+              className="w-full justify-start gap-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-900/20"
               data-testid="logout-button"
             >
               <LogOut className="w-4 h-4" />
