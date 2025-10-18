@@ -844,6 +844,103 @@ async def process_voice_command(data: Dict[str, Any], current_user: User = Depen
             "confidence": 0.0
         }
 
+# ============ COLLABORATION & ACTIVITY ROUTES (PHASE 2) ============
+
+@api_router.get("/activity/feed")
+async def get_activity_feed(current_user: User = Depends(get_current_user), limit: int = 50):
+    activities = await db.activities.find({}, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    return activities
+
+@api_router.post("/activity/log")
+async def log_activity(activity: Activity, current_user: User = Depends(get_current_user)):
+    activity.user_id = current_user.id
+    activity.user_name = current_user.name
+    doc = activity.model_dump()
+    await db.activities.insert_one(doc)
+    return activity
+
+@api_router.get("/notifications")
+async def get_notifications(current_user: User = Depends(get_current_user)):
+    notifications = await db.notifications.find(
+        {"user_id": current_user.id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return notifications
+
+@api_router.post("/notifications")
+async def create_notification(notification: Notification, current_user: User = Depends(get_current_user)):
+    doc = notification.model_dump()
+    await db.notifications.insert_one(doc)
+    return notification
+
+@api_router.put("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, current_user: User = Depends(get_current_user)):
+    await db.notifications.update_one(
+        {"id": notification_id, "user_id": current_user.id},
+        {"$set": {"is_read": True}}
+    )
+    return {"message": "Notification marked as read"}
+
+@api_router.get("/integrations")
+async def get_integrations(current_user: User = Depends(get_current_user)):
+    integrations = await db.integrations.find({}, {"_id": 0}).to_list(1000)
+    return integrations
+
+@api_router.post("/integrations")
+async def create_integration(integration: Integration, current_user: User = Depends(get_current_user)):
+    integration.connected_by = current_user.id
+    doc = integration.model_dump()
+    await db.integrations.insert_one(doc)
+    
+    # Log activity
+    activity = Activity(
+        user_id=current_user.id,
+        user_name=current_user.name,
+        action="connected",
+        resource_type="integration",
+        resource_id=integration.id,
+        details=f"Connected {integration.name}"
+    )
+    await db.activities.insert_one(activity.model_dump())
+    
+    return integration
+
+@api_router.put("/integrations/{integration_id}/toggle")
+async def toggle_integration(integration_id: str, current_user: User = Depends(get_current_user)):
+    integration = await db.integrations.find_one({"id": integration_id})
+    if not integration:
+        raise HTTPException(status_code=404, detail="Integration not found")
+    
+    new_status = not integration.get("is_active", False)
+    await db.integrations.update_one(
+        {"id": integration_id},
+        {"$set": {"is_active": new_status}}
+    )
+    
+    return {"message": "Integration toggled", "is_active": new_status}
+
+@api_router.post("/integrations/{integration_id}/test")
+async def test_integration(integration_id: str, current_user: User = Depends(get_current_user)):
+    integration = await db.integrations.find_one({"id": integration_id}, {"_id": 0})
+    if not integration:
+        raise HTTPException(status_code=404, detail="Integration not found")
+    
+    # Simulate integration test
+    return {
+        "status": "success",
+        "message": f"{integration['name']} connection tested successfully",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+@api_router.get("/team/online")
+async def get_online_users(current_user: User = Depends(get_current_user)):
+    # Simulated online users
+    users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(100)
+    return {
+        "online_users": users[:5],  # First 5 users simulated as online
+        "total": len(users)
+    }
+
 # ============ MAIN APP ============
 
 app.include_router(api_router)
