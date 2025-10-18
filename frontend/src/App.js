@@ -197,6 +197,16 @@ function App() {
                 )
               }
             />
+            <Route
+              path="/analytics"
+              element={
+                isAuthenticated ? (
+                  <Analytics user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" />
