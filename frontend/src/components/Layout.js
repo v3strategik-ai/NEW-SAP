@@ -18,7 +18,8 @@ import {
   Mail,
   FileSearch,
   MessageSquare,
-  Plug
+  Plug,
+  BarChart3
 } from 'lucide-react';
 
 const Layout = ({ user, onLogout, children }) => {
