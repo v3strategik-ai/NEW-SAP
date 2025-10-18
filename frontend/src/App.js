@@ -144,6 +144,36 @@ function App() {
                 )
               }
             />
+            <Route
+              path="/workflows"
+              element={
+                isAuthenticated ? (
+                  <Workflows user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/email"
+              element={
+                isAuthenticated ? (
+                  <EmailAssistant user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/documents"
+              element={
+                isAuthenticated ? (
+                  <DocumentIntelligence user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" />
