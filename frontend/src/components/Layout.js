@@ -16,7 +16,9 @@ import {
   Moon,
   GitBranch,
   Mail,
-  FileSearch
+  FileSearch,
+  MessageSquare,
+  Plug
 } from 'lucide-react';
 
 const Layout = ({ user, onLogout, children }) => {
