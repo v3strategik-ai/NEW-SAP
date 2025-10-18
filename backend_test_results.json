@@ -1,0 +1,133 @@
+{
+  "timestamp": "2025-10-18T21:57:59.017195",
+  "total_tests": 25,
+  "passed_tests": 25,
+  "success_rate": 100.0,
+  "results": [
+    {
+      "test": "User Registration",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "User Login",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Current User",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Customers",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Create Customer",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Leads",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Create Lead",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "AI Lead Scoring",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Opportunities",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "CRM Dashboard",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Products",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Create Product",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Quotes",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Create Customer for Quote",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "AI Quote Generation",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Inventory Items",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Create Inventory Item",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "AI Demand Forecasting",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Invoices",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Create Invoice",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Transactions",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "Financial Reports",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "AI Financial Predictions",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "AI Query",
+      "status": "PASSED",
+      "details": "Status: 200"
+    },
+    {
+      "test": "AI Insights",
+      "status": "PASSED",
+      "details": "Status: 200"
+    }
+  ]
+}
