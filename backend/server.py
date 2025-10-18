@@ -339,14 +339,22 @@ async def score_lead(lead_id: str, current_user: User = Depends(get_current_user
     
     try:
         chat = await get_ai_chat()
-        prompt = f"""Analyze this lead and provide a score from 0-100 based on conversion potential:
+        prompt = f"""Analyze this lead and provide detailed scoring with explanation:
         Name: {lead.get('name')}
         Company: {lead.get('company')}
         Source: {lead.get('source')}
         Status: {lead.get('status')}
         Notes: {lead.get('notes')}
         
-        Provide a JSON response with: {{"score": <number>, "reasoning": "<explanation>"}}"""
+        Provide JSON with:
+        {{
+            "score": <0-100>,
+            "confidence": <0-1>,
+            "reasoning": "detailed explanation",
+            "strengths": ["strength1", "strength2"],
+            "concerns": ["concern1", "concern2"],
+            "recommended_actions": ["action1", "action2"]
+        }}"""
         
         message = UserMessage(text=prompt)
         response = await chat.send_message(message)
@@ -354,12 +362,27 @@ async def score_lead(lead_id: str, current_user: User = Depends(get_current_user
         result = json.loads(response)
         score = result.get('score', 50)
         
-        await db.leads.update_one({"id": lead_id}, {"$set": {"score": score, "updated_at": datetime.now(timezone.utc).isoformat()}})
+        await db.leads.update_one({
+            "id": lead_id
+        }, {
+            "$set": {
+                "score": score,
+                "score_details": result,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        })
         
-        return {"score": score, "reasoning": result.get('reasoning')}
+        return result
     except Exception as e:
         logging.error(f"AI scoring error: {str(e)}")
-        return {"score": 50, "reasoning": "Unable to calculate AI score"}
+        return {
+            "score": 50,
+            "confidence": 0.5,
+            "reasoning": "Unable to calculate AI score",
+            "strengths": [],
+            "concerns": [],
+            "recommended_actions": []
+        }
 
 @api_router.get("/crm/opportunities", response_model=List[Opportunity])
 async def get_opportunities(current_user: User = Depends(get_current_user)):
