@@ -13,7 +13,7 @@ const AIAssistant = ({ user, onLogout }) => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: 'Hello! I\'m your AI assistant for the ERP system. I can help you analyze data, generate insights, and answer questions about your business. What would you like to know?'
+      content: 'Hello! I\'m Agentix AI, your intelligent assistant for the ERP system. I can help you analyze data, generate insights, and answer questions about your business. What would you like to know?'
     }
   ]);
   const [loading, setLoading] = useState(false);
