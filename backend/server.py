@@ -259,6 +259,31 @@ class Integration(BaseModel):
     connected_by: str
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+# Phase 3: Analytics Models
+class Report(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    type: str  # sales, revenue, inventory, custom
+    config: Dict[str, Any]
+    created_by: str
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class Forecast(BaseModel):
+    metric: str
+    current_value: float
+    predicted_value: float
+    confidence: float
+    period: str
+    factors: List[str]
+
+class CohortData(BaseModel):
+    cohort_name: str
+    period: str
+    customer_count: int
+    revenue: float
+    retention_rate: float
+
 # ============ HELPER FUNCTIONS ============
 
 def hash_password(password: str) -> str:
