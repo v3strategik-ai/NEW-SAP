@@ -79,7 +79,7 @@ const Layout = ({ user, onLogout, children }) => {
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                         isActive
                           ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                       onClick={() => setSidebarOpen(false)}
                       data-testid={`nav-${item.name.toLowerCase().replace(' ', '-')}`}
