@@ -176,6 +176,26 @@ function App() {
                 )
               }
             />
+            <Route
+              path="/collaboration"
+              element={
+                isAuthenticated ? (
+                  <Collaboration user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/integrations"
+              element={
+                isAuthenticated ? (
+                  <Integrations user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" />
