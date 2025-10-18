@@ -185,6 +185,47 @@ class AIResponse(BaseModel):
     response: str
     insights: Optional[Dict[str, Any]] = None
 
+# Workflow Models
+class WorkflowNode(BaseModel):
+    id: str
+    type: str  # trigger, condition, action
+    config: Dict[str, Any]
+    position: Dict[str, int]
+
+class Workflow(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: Optional[str] = None
+    nodes: List[WorkflowNode]
+    connections: List[Dict[str, str]]
+    is_active: bool = True
+    created_by: str
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+# Email Assistant Models
+class EmailDraft(BaseModel):
+    to: str
+    subject: str
+    context: str
+    tone: str = "professional"
+
+class EmailResponse(BaseModel):
+    subject: str
+    body: str
+    suggestions: List[str]
+
+# Document Intelligence Models
+class DocumentUpload(BaseModel):
+    file_name: str
+    file_type: str
+    content: str  # base64 encoded
+
+class ExtractedData(BaseModel):
+    document_type: str
+    fields: Dict[str, Any]
+    confidence: float
+
 # ============ HELPER FUNCTIONS ============
 
 def hash_password(password: str) -> str:
