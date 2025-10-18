@@ -50,17 +50,17 @@ const Login = ({ onLogin }) => {
 
       <Card className="w-full max-w-md glass-effect relative z-10" data-testid="login-card">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-1 w-72 h-72 flex items-center justify-center">
+          <div className="mx-auto mb-0 w-80 h-80 flex items-center justify-center">
             <img 
-              src="https://customer-assets.emergentagent.com/job_powerstack-crm/artifacts/q5tmtjk6_Photoroom_001_20250925_011212.PNG" 
+              src="https://customer-assets.emergentagent.com/job_powerstack-crm/artifacts/m2rqpiy1_Photoroom_20251008_115426.PNG" 
               alt="Agentix AI Logo"
               className="w-full h-full object-contain"
             />
           </div>
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent -mt-4 mb-1">
             Agentix AI
           </CardTitle>
-          <CardDescription className="text-base mt-1">
+          <CardDescription className="text-base">
             {isLogin ? 'Sign in to your account' : 'Create your account'}
           </CardDescription>
         </CardHeader>
