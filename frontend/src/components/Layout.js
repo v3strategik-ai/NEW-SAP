@@ -33,6 +33,7 @@ const Layout = ({ user, onLogout, children }) => {
     { name: 'CPQ', path: '/cpq', icon: FileText },
     { name: 'Inventory', path: '/inventory', icon: Package },
     { name: 'Financial', path: '/financial', icon: DollarSign },
+    { name: 'Analytics', path: '/analytics', icon: BarChart3 },
     { name: 'AI Assistant', path: '/ai', icon: Brain },
     { name: 'Workflows', path: '/workflows', icon: GitBranch },
     { name: 'Email AI', path: '/email', icon: Mail },
