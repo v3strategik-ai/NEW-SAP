@@ -9,6 +9,9 @@ import CPQ from './pages/CPQ';
 import Inventory from './pages/Inventory';
 import Financial from './pages/Financial';
 import AIAssistant from './pages/AIAssistant';
+import Workflows from './pages/Workflows';
+import EmailAssistant from './pages/EmailAssistant';
+import DocumentIntelligence from './pages/DocumentIntelligence';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from './contexts/ThemeContext';
 
