@@ -12,6 +12,8 @@ import AIAssistant from './pages/AIAssistant';
 import Workflows from './pages/Workflows';
 import EmailAssistant from './pages/EmailAssistant';
 import DocumentIntelligence from './pages/DocumentIntelligence';
+import Collaboration from './pages/Collaboration';
+import Integrations from './pages/Integrations';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from './contexts/ThemeContext';
 
