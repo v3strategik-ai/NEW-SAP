@@ -47,9 +47,9 @@ const Layout = ({ user, onLogout, children }) => {
           {/* Logo */}
           <div className="p-6 border-b">
             <div className="flex flex-col items-center">
-              <div className="w-40 h-40 flex items-center justify-center -mb-2">
+              <div className="w-48 h-40 flex items-center justify-center -mb-4">
                 <img 
-                  src="https://customer-assets.emergentagent.com/job_powerstack-crm/artifacts/m2rqpiy1_Photoroom_20251008_115426.PNG" 
+                  src="https://customer-assets.emergentagent.com/job_powerstack-crm/artifacts/vmahta5p_Photoroom_005_20250925_011212.PNG" 
                   alt="Agentix AI Logo"
                   className="w-full h-full object-contain"
                 />
