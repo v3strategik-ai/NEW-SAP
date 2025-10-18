@@ -47,7 +47,7 @@ const Layout = ({ user, onLogout, children }) => {
           {/* Logo */}
           <div className="p-6 border-b">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 flex items-center justify-center">
+              <div className="w-36 h-36 flex items-center justify-center">
                 <img 
                   src="https://customer-assets.emergentagent.com/job_powerstack-crm/artifacts/q5tmtjk6_Photoroom_001_20250925_011212.PNG" 
                   alt="Agentix AI Logo"
@@ -55,7 +55,7 @@ const Layout = ({ user, onLogout, children }) => {
                 />
               </div>
               <div>
-                <h2 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   Agentix AI
                 </h2>
               </div>
