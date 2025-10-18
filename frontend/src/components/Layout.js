@@ -35,7 +35,9 @@ const Layout = ({ user, onLogout, children }) => {
     { name: 'AI Assistant', path: '/ai', icon: Brain },
     { name: 'Workflows', path: '/workflows', icon: GitBranch },
     { name: 'Email AI', path: '/email', icon: Mail },
-    { name: 'Documents', path: '/documents', icon: FileSearch }
+    { name: 'Documents', path: '/documents', icon: FileSearch },
+    { name: 'Team', path: '/collaboration', icon: MessageSquare },
+    { name: 'Integrations', path: '/integrations', icon: Plug }
   ];
 
   return (
