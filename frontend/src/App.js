@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import '@/App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
@@ -10,6 +10,7 @@ import Inventory from './pages/Inventory';
 import Financial from './pages/Financial';
 import AIAssistant from './pages/AIAssistant';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
