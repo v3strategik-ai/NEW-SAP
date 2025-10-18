@@ -14,6 +14,7 @@ import EmailAssistant from './pages/EmailAssistant';
 import DocumentIntelligence from './pages/DocumentIntelligence';
 import Collaboration from './pages/Collaboration';
 import Integrations from './pages/Integrations';
+import Analytics from './pages/Analytics';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from './contexts/ThemeContext';
 
