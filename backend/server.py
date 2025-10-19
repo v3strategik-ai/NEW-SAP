@@ -1245,7 +1245,6 @@ async def generate_report(report_id: str, current_user: User = Depends(get_curre
     if not report:
         raise HTTPException(status_code=404, detail="Report not found")
     
-    # Generate report based on type
     result = {
         "report_id": report_id,
         "name": report['name'],
@@ -1255,6 +1254,207 @@ async def generate_report(report_id: str, current_user: User = Depends(get_curre
     }
     
     return result
+
+# ============ INDUSTRY & COMPLIANCE ROUTES (PHASE 4) ============
+
+@api_router.get("/industry/templates")
+async def get_industry_templates(current_user: User = Depends(get_current_user)):
+    templates = [
+        {
+            "industry_type": "healthcare",
+            "name": "Healthcare & Medical",
+            "compliance_standards": ["HIPAA", "HITECH"],
+            "features": ["Patient Records", "Appointment Scheduling", "HIPAA Compliance", "Medical Billing"],
+            "required_fields": {"patient_consent": True, "phi_protection": True}
+        },
+        {
+            "industry_type": "manufacturing",
+            "name": "Manufacturing & Production",
+            "compliance_standards": ["ISO 9001", "Safety Standards"],
+            "features": ["Production Planning", "Quality Control", "Supply Chain", "Equipment Tracking"],
+            "required_fields": {"lot_tracking": True, "quality_checks": True}
+        },
+        {
+            "industry_type": "retail",
+            "name": "Retail & E-commerce",
+            "compliance_standards": ["PCI DSS", "Consumer Protection"],
+            "features": ["Point of Sale", "Inventory Sync", "Customer Loyalty", "Multi-channel"],
+            "required_fields": {"payment_security": True, "return_policy": True}
+        },
+        {
+            "industry_type": "services",
+            "name": "Professional Services",
+            "compliance_standards": ["SOC 2", "GDPR"],
+            "features": ["Time Tracking", "Project Billing", "Resource Planning", "Client Portal"],
+            "required_fields": {"data_privacy": True, "time_tracking": True}
+        }
+    ]
+    return templates
+
+@api_router.post("/industry/activate")
+async def activate_industry_template(data: Dict[str, Any], current_user: User = Depends(get_current_user)):
+    industry_type = data.get("industry_type")
+    
+    config = IndustryConfig(
+        industry_type=industry_type,
+        compliance_standards=data.get("compliance_standards", []),
+        required_fields=data.get("required_fields", {}),
+        workflows=data.get("workflows", []),
+        is_active=True
+    )
+    
+    await db.industry_config.insert_one(config.model_dump())
+    
+    return {"message": f"{industry_type} template activated", "config": config}
+
+@api_router.get("/compliance/status")
+async def get_compliance_status(current_user: User = Depends(get_current_user)):
+    items = await db.compliance.find({}, {"_id": 0}).to_list(1000)
+    
+    summary = {
+        "total_requirements": len(items),
+        "compliant": len([i for i in items if i.get("status") == "compliant"]),
+        "non_compliant": len([i for i in items if i.get("status") == "non_compliant"]),
+        "in_progress": len([i for i in items if i.get("status") == "in_progress"])
+    }
+    
+    return {"items": items, "summary": summary}
+
+@api_router.post("/compliance/scan")
+async def run_compliance_scan(standard: str, current_user: User = Depends(get_current_user)):
+    try:
+        chat = await get_ai_chat()
+        
+        # Get system data
+        customers = await db.customers.count_documents({})
+        users = await db.users.count_documents({})
+        
+        prompt = f"""Perform a compliance scan for {standard} standard.
+        System has {customers} customers and {users} users.
+        
+        Provide JSON array of compliance items:
+        [
+            {{
+                "standard": "{standard}",
+                "requirement": "requirement description",
+                "status": "compliant|non_compliant|in_progress",
+                "recommendation": "what needs to be done"
+            }}
+        ]"""
+        
+        message = UserMessage(text=prompt)
+        response = await chat.send_message(message)
+        items = json.loads(response)
+        
+        # Store compliance items
+        for item in items:
+            compliance_item = ComplianceItem(
+                standard=standard,
+                requirement=item.get("requirement", ""),
+                status=item.get("status", "in_progress"),
+                last_checked=datetime.now(timezone.utc).isoformat()
+            )
+            await db.compliance.insert_one(compliance_item.model_dump())
+        
+        return {"message": f"Compliance scan completed for {standard}", "items": items}
+    except Exception as e:
+        logging.error(f"Compliance scan error: {str(e)}")
+        return {"message": "Scan failed", "items": []}
+
+# ============ PROJECT MANAGEMENT ROUTES (PHASE 4) ============
+
+@api_router.get("/projects", response_model=List[Project])
+async def get_projects(current_user: User = Depends(get_current_user)):
+    projects = await db.projects.find({}, {"_id": 0}).to_list(1000)
+    return projects
+
+@api_router.post("/projects", response_model=Project)
+async def create_project(project: Project, current_user: User = Depends(get_current_user)):
+    project.created_by = current_user.id
+    doc = project.model_dump()
+    await db.projects.insert_one(doc)
+    return project
+
+@api_router.get("/projects/{project_id}/tasks")
+async def get_project_tasks(project_id: str, current_user: User = Depends(get_current_user)):
+    tasks = await db.tasks.find({"project_id": project_id}, {"_id": 0}).to_list(1000)
+    return tasks
+
+@api_router.post("/tasks", response_model=Task)
+async def create_task(task: Task, current_user: User = Depends(get_current_user)):
+    doc = task.model_dump()
+    await db.tasks.insert_one(doc)
+    return task
+
+@api_router.put("/tasks/{task_id}/status")
+async def update_task_status(task_id: str, data: Dict[str, Any], current_user: User = Depends(get_current_user)):
+    await db.tasks.update_one({"id": task_id}, {"$set": {"status": data.get("status")}})
+    return {"message": "Task status updated"}
+
+# ============ HR MANAGEMENT ROUTES (PHASE 4) ============
+
+@api_router.get("/hr/employees", response_model=List[Employee])
+async def get_employees(current_user: User = Depends(get_current_user)):
+    employees = await db.employees.find({}, {"_id": 0}).to_list(1000)
+    return employees
+
+@api_router.post("/hr/employees", response_model=Employee)
+async def create_employee(employee: Employee, current_user: User = Depends(get_current_user)):
+    doc = employee.model_dump()
+    await db.employees.insert_one(doc)
+    return employee
+
+@api_router.get("/hr/analytics")
+async def get_hr_analytics(current_user: User = Depends(get_current_user)):
+    total_employees = await db.employees.count_documents({})
+    active_employees = await db.employees.count_documents({"status": "active"})
+    
+    # Department breakdown
+    pipeline = [
+        {"$group": {"_id": "$department", "count": {"$sum": 1}}}
+    ]
+    dept_breakdown = await db.employees.aggregate(pipeline).to_list(100)
+    
+    return {
+        "total_employees": total_employees,
+        "active_employees": active_employees,
+        "department_breakdown": dept_breakdown
+    }
+
+# ============ CURRENCY ROUTES (PHASE 4) ============
+
+@api_router.get("/currencies")
+async def get_currencies(current_user: User = Depends(get_current_user)):
+    currencies = [
+        {"code": "USD", "name": "US Dollar", "symbol": "$", "exchange_rate": 1.0},
+        {"code": "EUR", "name": "Euro", "symbol": "€", "exchange_rate": 0.92},
+        {"code": "GBP", "name": "British Pound", "symbol": "£", "exchange_rate": 0.79},
+        {"code": "JPY", "name": "Japanese Yen", "symbol": "¥", "exchange_rate": 149.50},
+        {"code": "CNY", "name": "Chinese Yuan", "symbol": "¥", "exchange_rate": 7.24},
+        {"code": "INR", "name": "Indian Rupee", "symbol": "₹", "exchange_rate": 83.12}
+    ]
+    return currencies
+
+@api_router.post("/currencies/convert")
+async def convert_currency(data: Dict[str, Any], current_user: User = Depends(get_current_user)):
+    amount = data.get("amount", 0)
+    from_currency = data.get("from", "USD")
+    to_currency = data.get("to", "EUR")
+    
+    # Simplified conversion (in production, use real-time API)
+    rates = {"USD": 1.0, "EUR": 0.92, "GBP": 0.79, "JPY": 149.50, "CNY": 7.24, "INR": 83.12}
+    
+    # Convert to USD first, then to target currency
+    usd_amount = amount / rates.get(from_currency, 1.0)
+    converted_amount = usd_amount * rates.get(to_currency, 1.0)
+    
+    return {
+        "original_amount": amount,
+        "from_currency": from_currency,
+        "to_currency": to_currency,
+        "converted_amount": round(converted_amount, 2),
+        "exchange_rate": rates.get(to_currency, 1.0) / rates.get(from_currency, 1.0)
+    }
 
 # ============ MAIN APP ============
 
