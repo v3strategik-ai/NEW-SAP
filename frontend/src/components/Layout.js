@@ -19,7 +19,11 @@ import {
   FileSearch,
   MessageSquare,
   Plug,
-  BarChart3
+  BarChart3,
+  Building2,
+  Shield,
+  FolderKanban,
+  Briefcase
 } from 'lucide-react';
 
 const Layout = ({ user, onLogout, children }) => {
