@@ -211,6 +211,46 @@ function App() {
                 )
               }
             />
+            <Route
+              path="/industry"
+              element={
+                isAuthenticated ? (
+                  <IndustrySettings user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/compliance"
+              element={
+                isAuthenticated ? (
+                  <Compliance user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                isAuthenticated ? (
+                  <ProjectManagement user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/hr"
+              element={
+                isAuthenticated ? (
+                  <HRManagement user={user} onLogout={handleLogout} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" />
