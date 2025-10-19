@@ -284,6 +284,71 @@ class CohortData(BaseModel):
     revenue: float
     retention_rate: float
 
+# Phase 4: Industry-Specific Models
+class IndustryConfig(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    industry_type: str  # healthcare, manufacturing, retail, services
+    compliance_standards: List[str]
+    required_fields: Dict[str, Any]
+    workflows: List[str]
+    is_active: bool = True
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class ComplianceItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4())
+    standard: str  # GDPR, SOC2, HIPAA, etc
+    requirement: str
+    status: str  # compliant, non_compliant, in_progress
+    last_checked: str
+    evidence: Optional[str] = None
+    responsible_person: Optional[str] = None
+
+class Project(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: Optional[str] = None
+    status: str  # planning, active, on_hold, completed
+    start_date: str
+    end_date: Optional[str] = None
+    budget: Optional[float] = None
+    team_members: List[str] = []
+    created_by: str
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class Task(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    project_id: str
+    title: str
+    description: Optional[str] = None
+    status: str  # todo, in_progress, review, done
+    priority: str  # low, medium, high
+    assigned_to: Optional[str] = None
+    due_date: Optional[str] = None
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class Employee(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    employee_id: str
+    name: str
+    email: EmailStr
+    department: str
+    position: str
+    hire_date: str
+    salary: Optional[float] = None
+    status: str = "active"
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class Currency(BaseModel):
+    code: str
+    name: str
+    symbol: str
+    exchange_rate: float  # Relative to base currency (USD)
+
 # ============ HELPER FUNCTIONS ============
 
 def hash_password(password: str) -> str:
