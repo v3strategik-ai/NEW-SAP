@@ -15,6 +15,10 @@ import DocumentIntelligence from './pages/DocumentIntelligence';
 import Collaboration from './pages/Collaboration';
 import Integrations from './pages/Integrations';
 import Analytics from './pages/Analytics';
+import IndustrySettings from './pages/IndustrySettings';
+import Compliance from './pages/Compliance';
+import ProjectManagement from './pages/ProjectManagement';
+import HRManagement from './pages/HRManagement';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from './contexts/ThemeContext';
 
